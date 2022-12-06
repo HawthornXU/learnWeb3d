@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>绘制点坐标</title>
+  <script src="glMatrix-0.9.6.min.js"></script>
+  <script>
+    var webgl;
+    var projMat4 = mat4.create();
+    // 顶点着色器shader
+    var vertexString = `
+    attribute vec4 a_position;
+    uniform mat4 proj;
+    void main() {
+      gl_Position = proj * a_position;
+      gl_PointSize = 60.0;
+    }
+    `
+    // 片元着色器shader
+    var fragmentString = `
+    void main() {
+        gl_FragColor = vec4(0, 0, 1.0, 1.0);
+    }
+    `
+
+    function init() {
+      initWebGl()
+      initShader()
+      initBuffer()
+      draw()
+    }
+
+    function initWebGl() {
+      let webglDiv = document.getElementById('webglCanvas')
+      webgl = webglDiv.getContext('webgl')
+      webgl.viewport(0, 0, webglDiv.clientWidth, webglDiv.clientHeight);
+      mat4.ortho(0, webglDiv.clientWidth, webglDiv.clientHeight, 0, -1, 1, projMat4)
+    }
+
+    // 初始化着色器
+    function initShader() {
+      // 顶点shader 容器
+      let vsshader = webgl.createShader(webgl.VERTEX_SHADER);
+      // 片元着色器
+      let fsshader = webgl.createShader(webgl.FRAGMENT_SHADER);
+      webgl.shaderSource(vsshader, vertexString);
+      webgl.shaderSource(fsshader, fragmentString);
+
+      webgl.compileShader(vsshader);
+      webgl.compileShader(fsshader);
+
+      let program = webgl.createProgram();
+      webgl.attachShader(program, vsshader);
+      webgl.attachShader(program, fsshader);
+      webgl.linkProgram(program);
+      webgl.useProgram(program);
+
+      webgl.program = program;
+    }
+
+    // 数据缓冲区
+    function initBuffer() {
+      let pointPosition = new Float32Array([100.0, 100.0, 0, 1.0])
+      let aPosition = webgl.getAttribLocation(webgl.program, "a_position");
+      webgl.vertexAttrib4fv(aPosition, pointPosition);
+
+      let uniforproj = webgl.getUniformLocation(webgl.program, "proj")
+      webgl.uniformMatrix4fv(uniforproj, false, projMat4);
+    }
+
+    function draw() {
+      webgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      webgl.clear(webgl.COLOR_BUFFER_BIT);
+      webgl.drawArrays(webgl.POINTS, 0, 1);
+    }
+
+  </script>
+</head>
+<body onload="init()">
+<canvas id="webglCanvas" width="500" height="500"></canvas>
+
+</body>
+</html>
