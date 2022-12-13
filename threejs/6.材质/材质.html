@@ -84,10 +84,11 @@
   dodecahedron.position.set(65, 5, 5);
   icosahedron.position.set(80, 5, 5);
   // cube.rotateY(Math.PI/4)
-  camera.position.set(50, 30, 20);
-  camera.lookAt(40, 0, 0)
+  camera.position.set(50, 30, 40);
 
-  const controls = new OrbitControls(camera, renderer.domElement)
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(45, 0, 0);
+  controls.update();
 
   function animate() {
     requestAnimationFrame(animate);
