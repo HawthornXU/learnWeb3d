@@ -18,6 +18,7 @@
       }
     }
 
+
 </script>
 <script type="module">
   import * as THREE from 'three';
@@ -45,8 +46,26 @@
     0, 0, 10,
     5, 0, 1
   ]);
-
+  const pointColor = new Float32Array([
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1,
+    1, 1, 0,
+    0, 1, 1,
+    1, 0, 1
+  ]);
+  const normals = new Float32Array([
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0
+  ]);
+  // 设置几何体attributes属性的颜色color属性
+  geometry.attributes.color = new THREE.BufferAttribute(pointColor, 3); //3个为一组,表示一个顶点的颜色数据RGB
   geometry.attributes.position = new THREE.BufferAttribute(vertices, 3); //3个为一组表示顶点坐标;
+  geometry.attributes.normal = new THREE.BufferAttribute(normals, 3); //3个为一组表示顶点法向量;
   // 三角面(网格)渲染模式
   const material = new THREE.MeshLambertMaterial({
     color: 0x0000ff, //三角面颜色
@@ -54,9 +73,8 @@
   }); //材质对象
   const mesh = new THREE.Mesh(geometry, material);
 
-  const pointMaterial = new THREE.PointsMaterial({color: 0xff0000, size: 1});
+  const pointMaterial = new THREE.PointsMaterial({vertexColors: true, size: 1});
   const points = new THREE.Points(geometry, pointMaterial);
-
 
   // 环境光
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
